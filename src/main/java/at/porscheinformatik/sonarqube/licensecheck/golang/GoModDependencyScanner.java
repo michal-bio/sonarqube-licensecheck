@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
 
 import org.sonar.api.batch.fs.FilePredicate;
@@ -22,7 +21,6 @@ import at.porscheinformatik.sonarqube.licensecheck.licensemapping.LicenseMapping
 public class GoModDependencyScanner implements Scanner
 {
     private static final Logger LOGGER = Loggers.get(GoModDependencyScanner.class);
-
     private final LicenseMappingService licenseMappingService;
 
     public GoModDependencyScanner(LicenseMappingService licenseMappingService)
@@ -42,7 +40,6 @@ public class GoModDependencyScanner implements Scanner
         for (InputFile goModFile : fs.inputFiles(goModPredicate))
         {
             context.markForPublishing(goModFile);
-
             LOGGER.info("Scanning go.mod: (path={})", goModFile);
             allDependencies.addAll(dependencyParser(fs.baseDir(), goModFile));
         }
@@ -53,8 +50,7 @@ public class GoModDependencyScanner implements Scanner
     private Set<Dependency> dependencyParser(File baseDir, InputFile goModFile)
     {
         Set<Dependency> dependencies = new HashSet<>();
-
-        try (Scanner scanner = new Scanner(goModFile.inputStream()))
+        try (java.util.Scanner scanner = new java.util.Scanner(new FileInputStream(goModFile.file())))
         {
             while (scanner.hasNextLine())
             {
@@ -66,7 +62,7 @@ public class GoModDependencyScanner implements Scanner
                     {
                         String packageName = parts[1];
                         String version = parts[2];
-                        String license = ""; // Here you might use some method to find the license
+                        String license = ""; // You'll likely need to add your own logic for fetching the license
 
                         license = licenseMappingService.mapLicense(license);
 
@@ -79,7 +75,6 @@ public class GoModDependencyScanner implements Scanner
         {
             LOGGER.error("Could not load go.mod", e);
         }
-
         return dependencies;
     }
 }
