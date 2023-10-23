@@ -43,7 +43,8 @@ public class LicenseCheckSensor implements Sensor
             new PackageJsonDependencyScanner(licenseMappingService,
                 configuration.getBoolean(LicenseCheckPropertyKeys.NPM_RESOLVE_TRANSITIVE_DEPS).orElse(false)),
             new MavenDependencyScanner(licenseMappingService),
-            new GradleDependencyScanner(licenseMappingService)};
+            new GradleDependencyScanner(licenseMappingService),
+            new GoModDependencyScanner(licenseMappingService)};
     }
 
     private static void saveDependencies(SensorContext sensorContext, Set<Dependency> dependencies)
@@ -118,7 +119,9 @@ public class LicenseCheckSensor implements Sensor
             RULE_REPO_KEY_JS,
             RULE_REPO_KEY_TS,
             RULE_REPO_KEY_GROOVY,
-            RULE_REPO_KEY_KOTLIN);
+            RULE_REPO_KEY_KOTLIN,
+            RULE_REPO_KEY_GO
+        );
     }
 
     @Override
